@@ -6,7 +6,7 @@
 | **Format** | Self-paced, runs entirely on your own laptop (no cloud account needed) |
 | **Duration** | About 90 minutes (Lab 1: 40 min, Lab 2: 25 min, Lab 3: 25 min) |
 | **Operating systems** | macOS, Linux, or Windows with WSL2. All commands are for **bash/zsh**. |
-| **Server name used** | `sebas` (you may pick another name, but use the same one everywhere) |
+| **Server name used** | `mylibertyserver` (you may pick another name, but use the same one everywhere) |
 
 ---
 
@@ -57,7 +57,7 @@ Zip install        --->   Maven dev mode       --->   Container image
 #### Lab 1 — Liberty Kernel: install, configure and run
 
 - **Focus:** the administrator view of Liberty, built up from a minimal runtime.
-- **What you do:** unzip the kernel, create the `sebas` server, install `webProfile-11.0` with `featureUtility`, apply `server.xml`, start the server, deploy `server-info.war` through `dropins/`, then enable and open the Admin Center.
+- **What you do:** unzip the kernel, create the `mylibertyserver` server, install `webProfile-11.0` with `featureUtility`, apply `server.xml`, start the server, deploy `server-info.war` through `dropins/`, then enable and open the Admin Center.
 - **Result:** a running server with an application and a management console.
 - **Tools:** `server`, `featureUtility`, `productInfo`, browser.
 - **Duration:** about 40 minutes.
@@ -360,15 +360,15 @@ tree -L 1 wlp
 ### Step 1.4 — Create a server
 
 ```bash
-./wlp/bin/server create sebas
+./wlp/bin/server create mylibertyserver
 ```
 
-**Expected:** `Server sebas created.`
+**Expected:** `Server mylibertyserver created.`
 
 ### Step 1.5 — Explore the server directory
 
 ```bash
-tree -L 2 wlp/usr/servers/sebas
+tree -L 2 wlp/usr/servers/mylibertyserver
 ```
 
 Look for `server.xml` (configuration) and `dropins/` (hot-deploy folder). The `logs/` folder appears after the first start.
@@ -398,8 +398,8 @@ Accept the license prompt if one appears (type `y`, then Enter). Then list the f
 ### Step 1.8 — Apply the server configuration
 
 ```bash
-cp lab-repo/Assets/server.xml wlp/usr/servers/sebas/server.xml
-cat wlp/usr/servers/sebas/server.xml
+cp lab-repo/Assets/server.xml wlp/usr/servers/mylibertyserver/server.xml
+cat wlp/usr/servers/mylibertyserver/server.xml
 ```
 
 Key elements to review:
@@ -414,19 +414,19 @@ Key elements to review:
 ### Step 1.9 — Start the server
 
 ```bash
-./wlp/bin/server start sebas
+./wlp/bin/server start mylibertyserver
 ```
 
-**Expected:** `Server sebas started with process ID <number>.`
+**Expected:** `Server mylibertyserver started with process ID <number>.`
 
 Follow the log (optional, in **Terminal 2**; press `Ctrl+C` to leave `tail`):
 
 ```bash
 cd "$LAB_HOME"
-tail -f wlp/usr/servers/sebas/logs/messages.log
+tail -f wlp/usr/servers/mylibertyserver/logs/messages.log
 ```
 
-Look for `CWWKF0011I: The server sebas is ready to run a smarter planet` and for the HTTP/HTTPS port messages (`CWWKO0219I`).
+Look for `CWWKF0011I: The server mylibertyserver is ready to run a smarter planet` and for the HTTP/HTTPS port messages (`CWWKO0219I`).
 
 ### Step 1.10 — Verify the server
 
@@ -441,13 +441,13 @@ curl -I http://localhost:9080
 ### Step 1.11 — Deploy the sample application
 
 ```bash
-cp lab-repo/Assets/server-info.war wlp/usr/servers/sebas/dropins/server-info.war
+cp lab-repo/Assets/server-info.war wlp/usr/servers/mylibertyserver/dropins/server-info.war
 ```
 
 Liberty monitors `dropins/` and deploys the WAR automatically. Check the log:
 
 ```bash
-grep -E "CWWKZ0001I|CWWKT0016I" wlp/usr/servers/sebas/logs/messages.log
+grep -E "CWWKZ0001I|CWWKT0016I" wlp/usr/servers/mylibertyserver/logs/messages.log
 ```
 
 **Expected:** `CWWKZ0001I: Application server-info started` and a line with the URL `http://localhost:9080/server-info/`.
@@ -460,8 +460,8 @@ Open <http://localhost:9080/server-info>. The context root comes from the WAR fi
 
 ```bash
 diff lab-repo/Assets/server.xml lab-repo/Assets/server.xml.admin
-cp lab-repo/Assets/server.xml.admin wlp/usr/servers/sebas/server.xml
-./wlp/bin/featureUtility installServerFeatures sebas
+cp lab-repo/Assets/server.xml.admin wlp/usr/servers/mylibertyserver/server.xml
+./wlp/bin/featureUtility installServerFeatures mylibertyserver
 ```
 
 The `diff` output shows the changes:
@@ -478,8 +478,8 @@ The `diff` output shows the changes:
 ### Step 1.14 — Restart the server
 
 ```bash
-./wlp/bin/server stop sebas
-./wlp/bin/server start sebas
+./wlp/bin/server stop mylibertyserver
+./wlp/bin/server start mylibertyserver
 ```
 
 ### Step 1.15 — Open the Admin Center
@@ -491,19 +491,19 @@ Open <https://localhost:9443/adminCenter>. Your browser will warn about a self-s
 You must free port 9080 before Lab 2.
 
 ```bash
-./wlp/bin/server stop sebas
+./wlp/bin/server stop mylibertyserver
 ```
 
-**Expected:** `Server sebas stopped.`
+**Expected:** `Server mylibertyserver stopped.`
 
 Keep the `wlp` folder. Lab 3 reuses it.
 
 ### Lab 1 checkpoint
 
-- [ ] Server `sebas` started and answered on port 9080
+- [ ] Server `mylibertyserver` started and answered on port 9080
 - [ ] `server-info` responded at `/server-info`
 - [ ] Admin Center login succeeded on port 9443
-- [ ] Server stopped (`./wlp/bin/server status sebas` prints `Server sebas is not running.`)
+- [ ] Server stopped (`./wlp/bin/server status mylibertyserver` prints `Server mylibertyserver is not running.`)
 
 **Discussion questions**
 
@@ -518,7 +518,7 @@ Keep the `wlp` folder. Lab 3 reuses it.
 
 **Terminals:** Terminal 1 runs the server. Terminal 2 sends test requests.
 
-**Before you start:** the Lab 1 server must be stopped (`./wlp/bin/server status sebas` in `LAB_HOME` must report not running), otherwise port 9080 is busy.
+**Before you start:** the Lab 1 server must be stopped (`./wlp/bin/server status mylibertyserver` in `LAB_HOME` must report not running), otherwise port 9080 is busy.
 
 ### Step 2.1 — Clone the project (Terminal 1)
 
@@ -659,9 +659,9 @@ cd "$LAB_HOME"
 Lab 1 left the Admin Center configuration in the server. Go back to the basic configuration so the baseline matches what goes into the container, make sure the application is deployed, and start the server:
 
 ```bash
-cp lab-repo/Assets/server.xml wlp/usr/servers/sebas/server.xml
-cp lab-repo/Assets/server-info.war wlp/usr/servers/sebas/dropins/server-info.war
-./wlp/bin/server start sebas
+cp lab-repo/Assets/server.xml wlp/usr/servers/mylibertyserver/server.xml
+cp lab-repo/Assets/server-info.war wlp/usr/servers/mylibertyserver/dropins/server-info.war
+./wlp/bin/server start mylibertyserver
 ```
 
 Open <http://localhost:9080/server-info> and note the information shown (Java version, OS, Liberty version). You will compare it later.
@@ -671,7 +671,7 @@ Open <http://localhost:9080/server-info> and note the information shown (Java ve
 Port 9080 must be free for the container.
 
 ```bash
-./wlp/bin/server stop sebas
+./wlp/bin/server stop mylibertyserver
 ```
 
 ### Step 3.3 — Confirm Podman works
@@ -809,7 +809,7 @@ Manual alternative:
 cd "$LAB_HOME"
 podman rm -f server-info-app
 podman rmi liberty-server-info:1.0
-./wlp/bin/server stop sebas 2>/dev/null
+./wlp/bin/server stop mylibertyserver 2>/dev/null
 rm -rf wlp lab2 lab-repo
 ```
 
