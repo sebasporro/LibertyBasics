@@ -228,12 +228,27 @@ chmod +x lab-repo/Assets/cleanup.sh
 | `Dockerfile` | Container build definition (Lab 3) |
 | `cleanup.sh` | Interactive cleanup script (section 7) |
 
-**Step B — download the Liberty kernel zip.** The kernel is not stored in this repository. Download it yourself into `LAB_HOME`:
+**Step B — download the Liberty kernel zip.** The kernel is not stored in this repository. Download it yourself:
 
 - **Open Liberty** (free, open source): go to <https://openliberty.io/start/> or <https://openliberty.io/downloads/>, open *All GA Releases*, and download the **Kernel** package (`openliberty-kernel-<version>.zip`) of the latest release, or of the version your instructor tells you.
 - **WebSphere Liberty** (requires an IBM entitlement): download the kernel zip from your IBM download source. The labs were written with `wlp-kernel-26.0.0.8.zip`.
 
-All steps are identical for both. Tell the shell the exact name of the file you downloaded:
+> **Where the zip must be placed:** directly in the root of `LAB_HOME` (for example `~/liberty-labs/openliberty-kernel-<version>.zip`), **next to** the `lab-repo/` folder. Not inside `lab-repo/`, not inside `lab-repo/Assets/`, and not left in your browser's `Downloads` folder. Step 1.2 runs `unzip` from `LAB_HOME`, so the zip must be there **before** you unzip it, and the `wlp/` folder will be created next to it.
+>
+> ```text
+> $LAB_HOME/
+> ├── lab-repo/
+> └── openliberty-kernel-<version>.zip    <-- place the downloaded zip here
+> ```
+>
+> Browsers save files to `Downloads` by default. Move the file into `LAB_HOME` after downloading (adjust the file name to match yours):
+>
+> ```bash
+> mv ~/Downloads/openliberty-kernel-*.zip "$LAB_HOME"/
+> # WebSphere Liberty users: mv ~/Downloads/wlp-kernel-*.zip "$LAB_HOME"/
+> ```
+
+All steps are identical for both. Once the zip is in `LAB_HOME`, tell the shell the exact name of the file:
 
 ```bash
 cd "$LAB_HOME"
@@ -318,6 +333,8 @@ ls -lh "$LIBERTY_ZIP"
 **Expected:** a file of roughly 15–20 MB. The kernel distribution is a minimal runtime. It contains no optional features. They are installed on demand from the Liberty repository.
 
 ### Step 1.2 — Expand the zip
+
+> The zip must already be in `LAB_HOME` (see section 2.3, Step B), next to `lab-repo/`. Run `unzip` from `LAB_HOME`, so that `wlp/` is created there.
 
 ```bash
 unzip "$LIBERTY_ZIP" -x "__MACOSX/*" "*/.DS_Store"
