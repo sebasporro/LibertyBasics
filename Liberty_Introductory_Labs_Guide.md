@@ -398,8 +398,8 @@ Accept the license prompt if one appears (type `y`, then Enter). Then list the f
 ### Step 1.8 — Apply the server configuration
 
 ```bash
-cp lab-repo/Assets/server.xml wlp/usr/servers/mylibertyserver/server.xml
-cat wlp/usr/servers/mylibertyserver/server.xml
+cp ./Assets/server.xml ./wlp/usr/servers/mylibertyserver/server.xml
+cat ./wlp/usr/servers/mylibertyserver/server.xml
 ```
 
 Key elements to review:
@@ -423,7 +423,7 @@ Follow the log (optional, in **Terminal 2**; press `Ctrl+C` to leave `tail`):
 
 ```bash
 cd "$LAB_HOME"
-tail -f wlp/usr/servers/mylibertyserver/logs/messages.log
+tail -f ./wlp/usr/servers/mylibertyserver/logs/messages.log
 ```
 
 Look for `CWWKF0011I: The server mylibertyserver is ready to run a smarter planet` and for the HTTP/HTTPS port messages (`CWWKO0219I`).
@@ -441,13 +441,13 @@ curl -I http://localhost:9080
 ### Step 1.11 — Deploy the sample application
 
 ```bash
-cp lab-repo/Assets/server-info.war wlp/usr/servers/mylibertyserver/dropins/server-info.war
+cp ./Assets/server-info.war ./wlp/usr/servers/mylibertyserver/dropins/server-info.war
 ```
 
 Liberty monitors `dropins/` and deploys the WAR automatically. Check the log:
 
 ```bash
-grep -E "CWWKZ0001I|CWWKT0016I" wlp/usr/servers/mylibertyserver/logs/messages.log
+grep -E "CWWKZ0001I|CWWKT0016I" ./wlp/usr/servers/mylibertyserver/logs/messages.log
 ```
 
 **Expected:** `CWWKZ0001I: Application server-info started` and a line with the URL `http://localhost:9080/server-info/`.
@@ -459,8 +459,8 @@ Open <http://localhost:9080/server-info>. The context root comes from the WAR fi
 ### Step 1.13 — Enable the Admin Center
 
 ```bash
-diff lab-repo/Assets/server.xml lab-repo/Assets/server.xml.admin
-cp lab-repo/Assets/server.xml.admin wlp/usr/servers/mylibertyserver/server.xml
+diff ./Assets/server.xml ./Assets/server.xml.admin
+cp ./Assets/server.xml.admin ./wlp/usr/servers/mylibertyserver/server.xml
 ./wlp/bin/featureUtility installServerFeatures mylibertyserver
 ```
 
@@ -659,8 +659,8 @@ cd "$LAB_HOME"
 Lab 1 left the Admin Center configuration in the server. Go back to the basic configuration so the baseline matches what goes into the container, make sure the application is deployed, and start the server:
 
 ```bash
-cp lab-repo/Assets/server.xml wlp/usr/servers/mylibertyserver/server.xml
-cp lab-repo/Assets/server-info.war wlp/usr/servers/mylibertyserver/dropins/server-info.war
+cp ./Assets/server.xml ./wlp/usr/servers/mylibertyserver/server.xml
+cp ./Assets/server-info.war ./wlp/usr/servers/mylibertyserver/dropins/server-info.war
 ./wlp/bin/server start mylibertyserver
 ```
 
@@ -711,7 +711,7 @@ RUN configure.sh
 
 ### Step 3.5 — Build the image
 
-Build from the `lab-repo/Assets` folder, where the `Dockerfile`, `server.xml` and `server-info.war` are. Using it as the build context keeps the image build small (it does not send `wlp/` or the Liberty zip to Podman):
+Build from the `./Assets` folder, where the `Dockerfile`, `server.xml` and `server-info.war` are. Using it as the build context keeps the image build small (it does not send `wlp/` or the Liberty zip to Podman):
 
 ```bash
 podman build -t liberty-server-info:1.0 lab-repo/Assets
