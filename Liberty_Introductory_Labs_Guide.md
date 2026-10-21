@@ -207,21 +207,20 @@ echo "export LAB_HOME=\"$LAB_HOME\"" >> ~/.bashrc
 
 ### 2.3 Download the lab files and the Liberty kernel
 
-**Step A — get the lab files from this repository.** Replace the URL with the address of this GitHub repository:
+**Step A — get the lab files from this repository** (<https://github.com/sebasporro/LibertyBasics>):
 
 ```bash
 cd "$LAB_HOME"
-git clone https://github.com/<your-org>/<your-repo>.git lab-repo
+git clone https://github.com/sebasporro/LibertyBasics.git lab-repo
 ```
 
-Copy the files that the labs use into `LAB_HOME`. Run this from `LAB_HOME`:
+All lab files stay inside the cloned repository, in the `lab-repo/Assets/` folder. They are **not** copied anywhere else. The labs refer to them by the path `lab-repo/Assets/<file>`, always from `LAB_HOME`. Make the cleanup script executable:
 
 ```bash
-cp lab-repo/server.xml lab-repo/server.xml.admin lab-repo/server-info.war lab-repo/Dockerfile lab-repo/cleanup.sh .
-chmod +x cleanup.sh
+chmod +x lab-repo/Assets/cleanup.sh
 ```
 
-| File | Purpose |
+| File (in `lab-repo/Assets/`) | Purpose |
 |---|---|
 | `server.xml` | Basic server configuration with the `webProfile-11.0` feature (Labs 1, 3) |
 | `server.xml.admin` | Same configuration plus `adminCenter-1.0`, a user registry and the administrator role (Lab 1) |
@@ -285,7 +284,7 @@ git --version
 curl --version | head -1
 unzip -v | head -1
 podman --version
-ls -l "$LIBERTY_ZIP" server.xml server.xml.admin server-info.war Dockerfile cleanup.sh
+ls -l "$LIBERTY_ZIP" lab-repo/Assets/server.xml lab-repo/Assets/server.xml.admin lab-repo/Assets/server-info.war lab-repo/Assets/Dockerfile lab-repo/Assets/cleanup.sh
 ```
 
 **Expected:**
@@ -382,7 +381,7 @@ Accept the license prompt if one appears (type `y`, then Enter). Then list the f
 ### Step 1.8 — Apply the server configuration
 
 ```bash
-cp server.xml wlp/usr/servers/sebas/server.xml
+cp lab-repo/Assets/server.xml wlp/usr/servers/sebas/server.xml
 cat wlp/usr/servers/sebas/server.xml
 ```
 
@@ -425,7 +424,7 @@ curl -I http://localhost:9080
 ### Step 1.11 — Deploy the sample application
 
 ```bash
-cp server-info.war wlp/usr/servers/sebas/dropins/server-info.war
+cp lab-repo/Assets/server-info.war wlp/usr/servers/sebas/dropins/server-info.war
 ```
 
 Liberty monitors `dropins/` and deploys the WAR automatically. Check the log:
@@ -443,8 +442,8 @@ Open <http://localhost:9080/server-info>. The context root comes from the WAR fi
 ### Step 1.13 — Enable the Admin Center
 
 ```bash
-diff server.xml server.xml.admin
-cp server.xml.admin wlp/usr/servers/sebas/server.xml
+diff lab-repo/Assets/server.xml lab-repo/Assets/server.xml.admin
+cp lab-repo/Assets/server.xml.admin wlp/usr/servers/sebas/server.xml
 ./wlp/bin/featureUtility installServerFeatures sebas
 ```
 
@@ -643,8 +642,8 @@ cd "$LAB_HOME"
 Lab 1 left the Admin Center configuration in the server. Go back to the basic configuration so the baseline matches what goes into the container, make sure the application is deployed, and start the server:
 
 ```bash
-cp server.xml wlp/usr/servers/sebas/server.xml
-cp server-info.war wlp/usr/servers/sebas/dropins/server-info.war
+cp lab-repo/Assets/server.xml wlp/usr/servers/sebas/server.xml
+cp lab-repo/Assets/server-info.war wlp/usr/servers/sebas/dropins/server-info.war
 ./wlp/bin/server start sebas
 ```
 
@@ -670,7 +669,7 @@ On macOS/Windows, if `podman info` fails, run `podman machine start` (see sectio
 ### Step 3.4 — Review the Dockerfile
 
 ```bash
-cat Dockerfile
+cat lab-repo/Assets/Dockerfile
 ```
 
 **Expected content:**
@@ -695,15 +694,15 @@ RUN configure.sh
 
 ### Step 3.5 — Build the image
 
-Run it from `LAB_HOME`, where the `Dockerfile`, `server.xml` and `server-info.war` are:
+Build from the `lab-repo/Assets` folder, where the `Dockerfile`, `server.xml` and `server-info.war` are. Using it as the build context keeps the image build small (it does not send `wlp/` or the Liberty zip to Podman):
 
 ```bash
-podman build -t liberty-server-info:1.0 .
+podman build -t liberty-server-info:1.0 lab-repo/Assets
 ```
 
 The first build downloads the base image and the features, so it takes a few minutes. **Expected:** the last lines show `Successfully tagged localhost/liberty-server-info:1.0`.
 
-> The `server.xml` copied into the image must be the basic one (`webProfile-11.0`) from `LAB_HOME`. Do not replace it with the `.admin` version here.
+> The image uses the basic `server.xml` (`webProfile-11.0`) from `lab-repo/Assets`. The Admin Center version is a separate file (`server.xml.admin`) and is never used here.
 
 ### Step 3.6 — Verify the image
 
@@ -770,11 +769,11 @@ Open <http://localhost:9080/server-info> and compare it with the baseline from s
 
 ## 7. Final cleanup
 
-When you finish the labs, run the cleanup script **from `LAB_HOME`**. It is an interactive menu:
+When you finish the labs, run the cleanup script **from `LAB_HOME`**, using its path inside the repository. It is an interactive menu:
 
 ```bash
 cd "$LAB_HOME"
-./cleanup.sh
+./lab-repo/Assets/cleanup.sh
 ```
 
 | Option | Action |
