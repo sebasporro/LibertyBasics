@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Audience** | Developers and administrators new to WebSphere / Open Liberty |
+| **Audience** | Techniacl Sellers, Developers and Administrators new to WebSphere / Open Liberty |
 | **Format** | Self-paced, runs entirely on your own laptop (no cloud account needed) |
 | **Duration** | About 90 minutes (Lab 1: 40 min, Lab 2: 25 min, Lab 3: 25 min) |
 | **Operating systems** | macOS, Linux, or Windows with WSL2. All commands are for **bash/zsh**. |
@@ -29,7 +29,7 @@
 - **Expected** tells you what you should see. If you see something different, go to [Troubleshooting](#6-troubleshooting).
 - Text in `<angle brackets>` is a placeholder you must replace with your own value.
 - Several steps need **two terminals**. The guide labels them **Terminal 1** and **Terminal 2**.
-- **Every new terminal window starts in the wrong folder.** Always begin with the `cd "$LAB_HOME"` command shown at the top of each lab (see [section 2.2](#22-choose-your-lab-home-directory)).
+- All activities in a terminal window must start from the `LAB_HOME` directory. Before running anything in a new terminal (Terminal 1 or Terminal 2), run `cd "$LAB_HOME"` and confirm with `pwd`. All commands use paths relative to `LAB_HOME`, unless a step tells you to move into a subfolder (see [section 2.2](#22-choose-your-lab-home-directory)).
 
 ---
 
@@ -398,7 +398,7 @@ Accept the license prompt if one appears (type `y`, then Enter). Then list the f
 ### Step 1.8 — Apply the server configuration
 
 ```bash
-cp ./Assets/server.xml ./wlp/usr/servers/mylibertyserver/server.xml
+cp ./lab-repo/Assets/server.xml ./wlp/usr/servers/mylibertyserver/server.xml
 cat ./wlp/usr/servers/mylibertyserver/server.xml
 ```
 
@@ -441,7 +441,7 @@ curl -I http://localhost:9080
 ### Step 1.11 — Deploy the sample application
 
 ```bash
-cp ./Assets/server-info.war ./wlp/usr/servers/mylibertyserver/dropins/server-info.war
+cp ./lab-repo/Assets/server-info.war ./wlp/usr/servers/mylibertyserver/dropins/server-info.war
 ```
 
 Liberty monitors `dropins/` and deploys the WAR automatically. Check the log:
@@ -459,8 +459,8 @@ Open <http://localhost:9080/server-info>. The context root comes from the WAR fi
 ### Step 1.13 — Enable the Admin Center
 
 ```bash
-diff ./Assets/server.xml ./Assets/server.xml.admin
-cp ./Assets/server.xml.admin ./wlp/usr/servers/mylibertyserver/server.xml
+diff ./lab-repo/Assets/server.xml ./lab-repo/Assets/server.xml.admin
+cp ./lab-repo/Assets/server.xml.admin ./wlp/usr/servers/mylibertyserver/server.xml
 ./wlp/bin/featureUtility installServerFeatures mylibertyserver
 ```
 
@@ -518,7 +518,7 @@ Keep the `wlp` folder. Lab 3 reuses it.
 
 **Terminals:** Terminal 1 runs the server. Terminal 2 sends test requests.
 
-**Before you start:** the Lab 1 server must be stopped (`./wlp/bin/server status mylibertyserver` in `LAB_HOME` must report not running), otherwise port 9080 is busy.
+**Before you start:** the Lab 1 server must be stopped (`"$LAB_HOME/wlp/bin/server" status mylibertyserver` must report not running), otherwise port 9080 is busy.
 
 ### Step 2.1 — Clone the project (Terminal 1)
 
@@ -611,7 +611,12 @@ curl http://localhost:9080/health
 
 ### Step 2.10 — Optional: live code change
 
-1. Open `src/main/java/io/openliberty/sample/system/SystemResource.java` in your editor.
+1. Open this file in your editor:
+
+   ```
+   $LAB_HOME/lab2/guide-getting-started/start/src/main/java/io/openliberty/sample/system/SystemResource.java
+   ```
+
 2. Make a small change (for example, change the `description` text of `@Timed`) and save.
 3. Watch **Terminal 1**: dev mode recompiles and redeploys the application.
 4. Repeat the `curl` command from step 2.4.
@@ -659,8 +664,8 @@ cd "$LAB_HOME"
 Lab 1 left the Admin Center configuration in the server. Go back to the basic configuration so the baseline matches what goes into the container, make sure the application is deployed, and start the server:
 
 ```bash
-cp ./Assets/server.xml ./wlp/usr/servers/mylibertyserver/server.xml
-cp ./Assets/server-info.war ./wlp/usr/servers/mylibertyserver/dropins/server-info.war
+cp ./lab-repo/Assets/server.xml ./wlp/usr/servers/mylibertyserver/server.xml
+cp ./lab-repo/Assets/server-info.war ./wlp/usr/servers/mylibertyserver/dropins/server-info.war
 ./wlp/bin/server start mylibertyserver
 ```
 
@@ -771,11 +776,11 @@ Open <http://localhost:9080/server-info> and compare it with the baseline from s
 | `No such file or directory` for a lab file | Wrong current folder | `cd "$LAB_HOME"` and run `ls` |
 | `Address already in use`, or the browser shows the wrong app | Another process uses port 9080 or 9443 | `lsof -ti tcp:9080`, then `kill <pid>`; or stop the previous server or container |
 | `unzip` merges into an old `wlp/` | Left over from a previous run | `rm -rf "$LAB_HOME/wlp"` and unzip again |
-| `featureUtility` cannot connect | No internet, or a proxy is required | Check your network. For a proxy, set `proxyHost`, `proxyPort`, `proxyUser` and `proxyPassword` in `wlp/etc/featureUtility.properties` |
+| `featureUtility` cannot connect | No internet, or a proxy is required | Check your network. For a proxy, set `proxyHost`, `proxyPort`, `proxyUser` and `proxyPassword` in `$LAB_HOME/wlp/etc/featureUtility.properties` |
 | `./mvnw` cannot download Maven or dependencies | No internet, or a proxy is required | Configure `HTTP_PROXY`/`HTTPS_PROXY`, or the `.mvn/settings` for your proxy |
 | Java version error at startup | JDK older than 17, or `JAVA_HOME` points to an old JDK | Install JDK 17+ and set `JAVA_HOME` |
 | `git clone` says the destination already exists | Folder `guide-getting-started` already exists | Work inside `$LAB_HOME/lab2`, or delete the old folder |
-| `./mvnw: Permission denied` | Wrapper lost its execute bit | `chmod +x mvnw` |
+| `./mvnw: Permission denied` | Wrapper lost its execute bit | `chmod +x "$LAB_HOME/lab2/guide-getting-started/start/mvnw"` |
 | `/health` returns 200 in step 2.7 | `mpHealth` already enabled in the cloned `server.xml` | Remove the `mpHealth` feature, save, and retest |
 | `Cannot connect to Podman` | Podman machine not running (macOS/Windows) | `podman machine start` |
 | `podman run` fails with `name already in use` | Old container exists | `podman rm -f server-info-app` |
