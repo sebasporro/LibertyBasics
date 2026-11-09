@@ -48,6 +48,8 @@ Key concepts covered: Liberty directory layout, `server.xml`, feature manager (`
 
 ### 1.2 Lab details
 
+> **Note:** The labs should be executed in the indicated sequence (Lab 1 &rarr; Lab 2 &rarr; Lab 3), as subsequent labs build upon concepts, configurations, and artifacts established in the earlier labs.
+
 ```text
 Lab 1                     Lab 2                       Lab 3
 Zip install        --->   Maven dev mode       --->   Container image
@@ -379,7 +381,7 @@ Look for `server.xml` (configuration) and `dropins/` (hot-deploy folder). The `l
 ./wlp/bin/productInfo featureinfo
 ```
 
-Only a few core features are listed. Remember the list so you can compare it in the next step.
+No features are listed because the installation is based on the minimal Liberty Kernel package only. Remember this so you can compare it in the next step after installing features.
 
 ### Step 1.7 — Install the Web Profile feature set
 
@@ -393,7 +395,7 @@ Accept the license prompt if one appears (type `y`, then Enter). Then list the f
 ./wlp/bin/productInfo featureinfo
 ```
 
-**Expected:** a much longer list than in step 1.6. `featureUtility` downloaded many features from Maven Central.
+**Expected:** a list of installed features (compared to no features in step 1.6). `featureUtility` downloaded the required features from Maven Central.
 
 ### Step 1.8 — Apply the server configuration
 
